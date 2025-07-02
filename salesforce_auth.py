@@ -2,7 +2,7 @@ import requests
 import os
 
 def get_salesforce_token():
-    url = "https://login.salesforce.com/services/oauth2/token"
+    url = "https://welcome.salesforce.com/services/oauth2/token"
     payload = {
         'grant_type': 'password',
         'client_id': os.environ['CLIENT_ID'],
