@@ -1,28 +1,29 @@
-from flask import Flask, request, jsonify, redirect
+from flask import Flask, jsonify
+from flask_cors import CORS
 import requests
 import os
 
 app = Flask(__name__)
+CORS(app)
 
-@app.route("/oauth/callback")
-def oauth_callback():
-    code = request.args.get('code')
-    if not code:
-        return jsonify({'error': 'Missing authorization code'}), 400
+# Usa tu token y URL aquí (reemplaza con variables de entorno si quieres)
+ACCESS_TOKEN = 'Bearer 00DKZ000004eqNl!AQEAQHygJaxGanLIEvmDkzanvVTKE4lvW1F6DaW5pvrApHiwog9kycSXe.CAIU4J.HTcMGdnwdu3fJ3NnOrO8kUgOlBJuq_l'
+INSTANCE_URL = 'https://ne1750098607375.my.salesforce.com'
 
-    token_url = "https://login.salesforce.com/services/oauth2/token"
-    payload = {
-        'grant_type': 'authorization_code',
-        'code': code,
-        'client_id': os.environ['CLIENT_ID'],
-        'client_secret': os.environ['CLIENT_SECRET'],
-        'redirect_uri': 'https://backen-webservice-salesforce.onrender.com/oauth/callback'
+@app.route('/accounts', methods=['GET'])
+def get_accounts():
+    query = "SELECT Id, Name, Phone, Website FROM Account LIMIT 10"
+    url = f"{INSTANCE_URL}/services/data/v60.0/query?q={query}"
+
+    headers = {
+        'Authorization': ACCESS_TOKEN,
+        'Content-Type': 'application/json'
     }
 
-    response = requests.post(token_url, data=payload)
-    if response.status_code != 200:
-        return jsonify({'error': 'Failed to get access token', 'details': response.text}), 500
+    response = requests.get(url, headers=headers)
+    data = response.json()
 
-    token_data = response.json()
-    # Guarda el token en sesión o DB si lo deseas
-    return jsonify(token_data)
+    return jsonify(data)
+
+if __name__ == '__main__':
+    app.run(debug=True)
