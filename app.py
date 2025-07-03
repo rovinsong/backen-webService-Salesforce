@@ -12,7 +12,7 @@ INSTANCE_URL = 'https://ne1750098607375.my.salesforce.com'
 
 @app.route('/accounts', methods=['GET'])
 def get_accounts():
-    query = "SELECT Id, Name, Phone, Website FROM Account LIMIT 10"
+    query = "SELECT Id, Name,Razon_social__c,Type, Phone, Website FROM Account LIMIT 100"
     url = f"{INSTANCE_URL}/services/data/v60.0/query?q={query}"
 
     headers = {
